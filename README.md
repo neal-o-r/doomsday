@@ -1,2 +1,3 @@
 # doomsday
-Doomsday rule
+
+Simple Python implementation of Conway's [Doomsday Algorithm](https://en.wikipedia.org/wiki/Doomsday_rule).
