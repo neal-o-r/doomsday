@@ -1,6 +1,19 @@
-from collections import namedtuple
+class Date:
+    def __init__(self, day=None, month=None, year=None):
+        self.day = day
+        self.month = month
+        self.year = year
+        if year:
+            self.leap = self._is_leap_year(year)
+            self.century = year // 100
+            self.yr = year % 100
 
-Date = namedtuple("Date", ["day", "month", "year"], defaults=[None]*3)
+    def _is_leap_year(self, year):
+        mod4 = year % 4 == 0
+        mod100 = year % 100 != 0
+        mod400 = year % 400 == 0
+        return (mod4 & mod100) | mod400
+
 
 days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -25,15 +38,8 @@ def get_input():
     return Date(*map(int, dt.split(".")))
 
 
-def is_leap_year(year):
-    mod4 = year % 4 == 0
-    mod100 = year % 100 != 0
-    mod400 = year % 400 == 0
-    return (mod4 & mod100) | mod400
-
-
 def get_dooms(date):
-    leap = is_leap_year(date.year)
+    leap = date.leap
     return [Date(d, m) for d, m in [(3 + leap, 1), (28 + leap, 2)] + doomsdays]
 
 
@@ -41,16 +47,13 @@ def algorithm(date):
 
     dooms = get_dooms(date)
 
-    century = date.year // 100
-    year = date.year % 100
-
     # get the doomsday for that century
-    century_offset = century_dooms[(16 - century) % 4]
+    century_offset = century_dooms[(16 - date.century) % 4]
 
-    # then add the year offset (with leap years)
-    year_offset = year + year // 4
+    #  then add the year offset (with leap years)
+    year_offset = date.yr + date.yr // 4
 
-    # get the day offset from the nearest doomsday
+    #  get the day offset from the nearest doomsday
     day_offset = next(date.day - d.day for d in dooms if d.month == date.month)
 
     offset = century_offset + year_offset + day_offset
